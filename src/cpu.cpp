@@ -108,7 +108,7 @@ void Cpu::run_cycle(void) {
 
 			// Extract our X & Y values:
 			reg_x = ((op & 0x0F00) >> 8);
-			reg_y = ((op & 0x00F0) >> 8);
+			reg_y = ((op & 0x00F0) >> 4);
 
 			switch (op & 0x000F) {
 
