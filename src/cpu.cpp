@@ -151,8 +151,66 @@ void Cpu::run_cycle(void) {
 					}
 					increment_pc();
 					break;
+
+				// 8xy5 - SUB Vx, Vy
+				// Set Vx = Vx - Vy, set VF = NOT borrow.
+				case 5:
+					if (reg[reg_x] < reg[reg_y]) {
+						set_carry();
+					} else {
+						unset_carry();
+					}
+					reg[reg_x] -= reg[reg_x];
+					increment_pc();
+					break;
+
+				// 8xy6 - SHR Vx {, Vy}
+				// Set Vx = Vx SHR 1.
+				// If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2.
+				case 6:
+					if ((reg[reg_x] & 0x0001) == 1) {
+						set_carry();
+					} else {
+						unset_carry();
+					}
+					reg[reg_x] = reg[reg_x] >> 1;
+					increment_pc();
+					break;
+
+				// 8xy7 - SUBN Vx, Vy
+				// Set Vx = Vy - Vx, set VF = NOT borrow.
+				// If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+				case 7:
+					if ( reg[reg_y] > reg[reg_x] ) {
+						set_carry();
+					} else {
+						unset_carry();
+					}
+					reg[reg_x] = reg[reg_y] - reg[reg_x];
+					increment_pc();
+					break;
+
+				// 8xyE - SHL Vx {, Vy}
+				// Set Vx = Vx SHL 1.
+				// If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
+				case 0xE:
+					if ((((reg[reg_x] & 0xF000) >> 16) & 0x0001) == 1) {
+						set_carry();
+					} else {
+						unset_carry();
+					}
+					reg[reg_x] = reg[reg_x] << 1;
+					increment_pc();
+					break;
+
+				// Whoops:
+				default:
+					exit(1);
 			}
 			break;
+
+		default:
+			exit(1);
 	}
 }
 
@@ -166,5 +224,6 @@ inline void Cpu::set_carry(void) {
 }
 
 inline void Cpu::unset_carry(void) {
-	reg[0xF] = 0x01;
+	reg[0xF] = 0x00;
 }
+

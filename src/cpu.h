@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "memory.h"
 
